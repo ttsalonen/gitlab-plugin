@@ -99,6 +99,7 @@ public class GitLabPushTrigger extends Trigger<Job<?, ?>> {
     private String targetBranchRegex;
     private MergeRequestLabelFilterConfig mergeRequestLabelFilterConfig;
     private volatile Secret secretToken;
+    private String pendingBuildName;
 
     private transient BranchFilter branchFilter;
     private transient PushHookTriggerHandler pushHookTriggerHandler;
@@ -119,7 +120,8 @@ public class GitLabPushTrigger extends Trigger<Job<?, ?>> {
                              boolean setBuildDescription, boolean addNoteOnMergeRequest, boolean addCiMessage, boolean addVoteOnMergeRequest,
                              boolean acceptMergeRequestOnSuccess, BranchFilterType branchFilterType,
                              String includeBranchesSpec, String excludeBranchesSpec, String targetBranchRegex,
-                             MergeRequestLabelFilterConfig mergeRequestLabelFilterConfig, String secretToken, boolean triggerOnPipelineEvent) {
+                             MergeRequestLabelFilterConfig mergeRequestLabelFilterConfig, String secretToken, boolean triggerOnPipelineEvent,
+                             String pendingBuildName) {
         this.triggerOnPush = triggerOnPush;
         this.triggerOnMergeRequest = triggerOnMergeRequest;
         this.triggerOnAcceptedMergeRequest = triggerOnAcceptedMergeRequest;
@@ -141,6 +143,7 @@ public class GitLabPushTrigger extends Trigger<Job<?, ?>> {
         this.acceptMergeRequestOnSuccess = acceptMergeRequestOnSuccess;
         this.mergeRequestLabelFilterConfig = mergeRequestLabelFilterConfig;
         this.secretToken = Secret.fromString(secretToken);
+        this.pendingBuildName = pendingBuildName;
 
         initializeTriggerHandler();
         initializeBranchFilter();
@@ -266,6 +269,10 @@ public class GitLabPushTrigger extends Trigger<Job<?, ?>> {
         return secretToken == null ? null : secretToken.getPlainText();
     }
 
+    public String getPendingBuildName() {
+        return pendingBuildName;
+    }
+
     @DataBoundSetter
     public void setTriggerOnPush(boolean triggerOnPush) {
         this.triggerOnPush = triggerOnPush;
@@ -369,6 +376,11 @@ public class GitLabPushTrigger extends Trigger<Job<?, ?>> {
     @DataBoundSetter
     public void setAcceptMergeRequestOnSuccess(boolean acceptMergeRequestOnSuccess) {
         this.acceptMergeRequestOnSuccess = acceptMergeRequestOnSuccess;
+    }
+
+    @DataBoundSetter
+    public void setPendingBuildName(String pendingBuildName) {
+        this.pendingBuildName = pendingBuildName;
     }
 
     // executes when the Trigger receives a push request
